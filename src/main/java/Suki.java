@@ -11,6 +11,8 @@ public class Suki {
             "____________________________________________________________";
     private static final String BYE_COMMAND = "bye";
     private static final String LIST_COMMAND = "list";
+    private static final String MARK_COMMAND = "mark";
+    private static final String UNMARK_COMMAND = "unmark";
     private static final int MAX_TASKS = 100;
 
     public static void main(String[] args) {
@@ -21,6 +23,7 @@ public class Suki {
         System.out.println(LINE);
 
         String[] tasks = new String[MAX_TASKS];
+        boolean[] isDone = new boolean[MAX_TASKS];
         int taskCount = 0;
 
         Scanner scanner = new Scanner(System.in);
@@ -32,9 +35,20 @@ public class Suki {
 
             System.out.println(LINE);
             if (input.equals(LIST_COMMAND)) {
+                System.out.println("Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println((i + 1) + ". " + tasks[i]);
+                    System.out.println((i + 1) + ".[" + (isDone[i] ? "X" : " ") + "] " + tasks[i]);
                 }
+            } else if (input.startsWith(MARK_COMMAND + " ")) {
+                int index = Integer.parseInt(input.substring(MARK_COMMAND.length() + 1).trim()) - 1;
+                isDone[index] = true;
+                System.out.println("Nice! I've marked this task as done:");
+                System.out.println("  [X] " + tasks[index]);
+            } else if (input.startsWith(UNMARK_COMMAND + " ")) {
+                int index = Integer.parseInt(input.substring(UNMARK_COMMAND.length() + 1).trim()) - 1;
+                isDone[index] = false;
+                System.out.println("OK, I've marked this task as not done yet:");
+                System.out.println("  [ ] " + tasks[index]);
             } else {
                 tasks[taskCount] = input;
                 taskCount++;
