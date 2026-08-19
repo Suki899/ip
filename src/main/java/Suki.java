@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Suki {
@@ -16,7 +17,7 @@ public class Suki {
     private static final String TODO_COMMAND = "todo";
     private static final String DEADLINE_COMMAND = "deadline";
     private static final String EVENT_COMMAND = "event";
-    private static final int MAX_TASKS = 100;
+    private static final String DELETE_COMMAND = "delete";
 
     public static void main(String[] args) {
         System.out.println(LINE);
@@ -25,8 +26,7 @@ public class Suki {
         System.out.println("What can I do for you?");
         System.out.println(LINE);
 
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
 
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
@@ -37,7 +37,7 @@ public class Suki {
 
             System.out.println(LINE);
             try {
-                taskCount = processCommand(input, tasks, taskCount);
+                processCommand(input, tasks);
             } catch (SukiException e) {
                 System.out.println("OOPS!!! " + e.getMessage());
             }
@@ -49,31 +49,34 @@ public class Suki {
         System.out.println(LINE);
     }
 
-    private static int processCommand(String input, Task[] tasks, int taskCount) throws SukiException {
+    private static void processCommand(String input, ArrayList<Task> tasks) throws SukiException {
         if (input.equals(LIST_COMMAND)) {
             System.out.println("Here are the tasks in your list:");
-            for (int i = 0; i < taskCount; i++) {
-                System.out.println((i + 1) + "." + tasks[i]);
+            for (int i = 0; i < tasks.size(); i++) {
+                System.out.println((i + 1) + "." + tasks.get(i));
             }
-            return taskCount;
         } else if (input.equals(MARK_COMMAND) || input.startsWith(MARK_COMMAND + " ")) {
-            int index = parseIndex(input, MARK_COMMAND, taskCount);
-            tasks[index].markAsDone();
+            int index = parseIndex(input, MARK_COMMAND, tasks.size());
+            tasks.get(index).markAsDone();
             System.out.println("Nice! I've marked this task as done:");
-            System.out.println("  " + tasks[index]);
-            return taskCount;
+            System.out.println("  " + tasks.get(index));
         } else if (input.equals(UNMARK_COMMAND) || input.startsWith(UNMARK_COMMAND + " ")) {
-            int index = parseIndex(input, UNMARK_COMMAND, taskCount);
-            tasks[index].markAsNotDone();
+            int index = parseIndex(input, UNMARK_COMMAND, tasks.size());
+            tasks.get(index).markAsNotDone();
             System.out.println("OK, I've marked this task as not done yet:");
-            System.out.println("  " + tasks[index]);
-            return taskCount;
+            System.out.println("  " + tasks.get(index));
+        } else if (input.equals(DELETE_COMMAND) || input.startsWith(DELETE_COMMAND + " ")) {
+            int index = parseIndex(input, DELETE_COMMAND, tasks.size());
+            Task removed = tasks.remove(index);
+            System.out.println("Noted. I've removed this task:");
+            System.out.println("  " + removed);
+            System.out.println("Now you have " + tasks.size() + " tasks in the list.");
         } else if (input.equals(TODO_COMMAND) || input.startsWith(TODO_COMMAND + " ")) {
             String description = input.equals(TODO_COMMAND) ? "" : input.substring(TODO_COMMAND.length() + 1).trim();
             if (description.isEmpty()) {
                 throw new SukiException("The description of a todo cannot be empty.");
             }
-            return addTask(tasks, taskCount, new Todo(description));
+            addTask(tasks, new Todo(description));
         } else if (input.equals(DEADLINE_COMMAND) || input.startsWith(DEADLINE_COMMAND + " ")) {
             String details = input.equals(DEADLINE_COMMAND) ? "" : input.substring(DEADLINE_COMMAND.length() + 1).trim();
             if (details.isEmpty()) {
@@ -84,7 +87,7 @@ public class Suki {
                 throw new SukiException("A deadline needs a description and a '/by' date/time, "
                         + "e.g. deadline return book /by Sunday");
             }
-            return addTask(tasks, taskCount, new Deadline(parts[0].trim(), parts[1].trim()));
+            addTask(tasks, new Deadline(parts[0].trim(), parts[1].trim()));
         } else if (input.equals(EVENT_COMMAND) || input.startsWith(EVENT_COMMAND + " ")) {
             String details = input.equals(EVENT_COMMAND) ? "" : input.substring(EVENT_COMMAND.length() + 1).trim();
             if (details.isEmpty()) {
@@ -100,7 +103,7 @@ public class Suki {
                 throw new SukiException("An event needs a description, a '/from' and a '/to' date/time, "
                         + "e.g. event project meeting /from Mon 2pm /to 4pm");
             }
-            return addTask(tasks, taskCount, new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim()));
+            addTask(tasks, new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim()));
         } else {
             throw new SukiException("I'm sorry, but I don't know what that means :-(");
         }
@@ -120,15 +123,10 @@ public class Suki {
         return index;
     }
 
-    private static int addTask(Task[] tasks, int taskCount, Task newTask) throws SukiException {
-        if (taskCount >= MAX_TASKS) {
-            throw new SukiException("Your task list is full. Please clear some tasks first.");
-        }
-        tasks[taskCount] = newTask;
-        int newTaskCount = taskCount + 1;
+    private static void addTask(ArrayList<Task> tasks, Task newTask) {
+        tasks.add(newTask);
         System.out.println("Got it. I've added this task:");
         System.out.println("  " + newTask);
-        System.out.println("Now you have " + newTaskCount + " tasks in the list.");
-        return newTaskCount;
+        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
     }
 }
