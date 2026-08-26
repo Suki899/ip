@@ -21,6 +21,21 @@ import java.util.Scanner;
 public class Storage {
     /** What separates the fields on each saved line. */
     private static final String SEPARATOR = " | ";
+
+    /** Type code written for a todo. */
+    private static final String TODO_CODE = "T";
+
+    /** Type code written for a deadline. */
+    private static final String DEADLINE_CODE = "D";
+
+    /** Type code written for an event. */
+    private static final String EVENT_CODE = "E";
+
+    /** Field value meaning the task is done. */
+    private static final String DONE_FLAG = "1";
+
+    /** Field value meaning the task is not done. */
+    private static final String NOT_DONE_FLAG = "0";
     /** Used when splitting, because "|" is a regex metacharacter. */
     private static final String SEPARATOR_REGEX = " \\| ";
 
@@ -99,7 +114,7 @@ public class Storage {
      */
     private String encode(Task task) {
         String common = task.getTypeIcon() + SEPARATOR
-                + (task.isDone() ? "1" : "0") + SEPARATOR
+                + (task.isDone() ? DONE_FLAG : NOT_DONE_FLAG) + SEPARATOR
                 + task.getDescription();
         if (task instanceof Deadline) {
             return common + SEPARATOR + ((Deadline) task).getBy().toStorageString();
@@ -124,22 +139,22 @@ public class Storage {
         }
 
         String typeIcon = parts[0];
-        boolean isDone = parts[1].equals("1");
+        boolean isDone = parts[1].equals(DONE_FLAG);
         String description = parts[2];
 
         Task task;
         try {
             switch (typeIcon) {
-            case "T":
+            case TODO_CODE:
                 task = new Todo(description);
                 break;
-            case "D":
+            case DEADLINE_CODE:
                 if (parts.length < 4) {
                     return null;
                 }
                 task = new Deadline(description, DateTime.parse(parts[3]));
                 break;
-            case "E":
+            case EVENT_CODE:
                 if (parts.length < 5) {
                     return null;
                 }

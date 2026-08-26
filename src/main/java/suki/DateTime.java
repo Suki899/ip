@@ -47,17 +47,6 @@ public class DateTime implements Comparable<DateTime> {
         strict("d/M/uuuu"),
     };
 
-    /**
-     * Builds a formatter that refuses out-of-range dates.
-     *
-     * @param pattern the date pattern, which must use "uuuu" for the year
-     * @return a formatter using STRICT resolution
-     */
-    private static DateTimeFormatter strict(String pattern) {
-        return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
-                .withResolverStyle(ResolverStyle.STRICT);
-    }
-
     /** The date, with time set to midnight when the user gave none. */
     private final LocalDateTime value;
 
@@ -73,6 +62,17 @@ public class DateTime implements Comparable<DateTime> {
     private DateTime(LocalDateTime value, boolean hasTime) {
         this.value = value;
         this.hasTime = hasTime;
+    }
+
+    /**
+     * Builds a formatter that refuses out-of-range dates.
+     *
+     * @param pattern the date pattern, which must use "uuuu" for the year
+     * @return a formatter using STRICT resolution
+     */
+    private static DateTimeFormatter strict(String pattern) {
+        return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
+                .withResolverStyle(ResolverStyle.STRICT);
     }
 
     /**

@@ -8,6 +8,21 @@ package suki;
  * main loop or the task classes.
  */
 public class Parser {
+    /** Separates a deadline's description from its due date. */
+    private static final String BY_DELIMITER = " /by ";
+
+    /** Separates an event's description from its start. */
+    private static final String FROM_DELIMITER = " /from ";
+
+    /** Separates an event's start from its end. */
+    private static final String TO_DELIMITER = " /to ";
+
+    /** Splits a line into the command word and everything after it. */
+    private static final String COMMAND_DELIMITER = " ";
+
+    /** Not meant to be instantiated: this class only holds static helpers. */
+    private Parser() {
+    }
 
     /**
      * The result of reading one line of input: which command it is, and
@@ -26,7 +41,7 @@ public class Parser {
      * @return the command type and its arguments
      */
     public static ParsedInput parse(String input) {
-        String[] split = input.trim().split(" ", 2);
+        String[] split = input.trim().split(COMMAND_DELIMITER, 2);
         String commandWord = split[0];
         String arguments = split.length > 1 ? split[1].trim() : "";
         return new ParsedInput(CommandType.fromWord(commandWord), commandWord, arguments);
@@ -72,7 +87,7 @@ public class Parser {
      * @throws SukiException if the description or the date is missing or unreadable
      */
     public static Deadline parseDeadline(String arguments) throws SukiException {
-        String[] parts = arguments.split(" /by ", 2);
+        String[] parts = arguments.split(BY_DELIMITER, 2);
         if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
             throw new SukiException("A deadline needs a description and a '/by' date/time, "
                     + "e.g. deadline return book /by 2019-10-15");
@@ -89,11 +104,11 @@ public class Parser {
      * @throws SukiException if any part is missing or unreadable
      */
     public static Event parseEvent(String arguments) throws SukiException {
-        String[] fromSplit = arguments.split(" /from ", 2);
+        String[] fromSplit = arguments.split(FROM_DELIMITER, 2);
         if (fromSplit.length < 2 || fromSplit[0].trim().isEmpty()) {
             throw new SukiException(eventFormatMessage());
         }
-        String[] toSplit = fromSplit[1].split(" /to ", 2);
+        String[] toSplit = fromSplit[1].split(TO_DELIMITER, 2);
         if (toSplit.length < 2 || toSplit[0].trim().isEmpty() || toSplit[1].trim().isEmpty()) {
             throw new SukiException(eventFormatMessage());
         }
