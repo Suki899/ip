@@ -90,10 +90,11 @@ public class Storage {
                 + (task.isDone() ? "1" : "0") + SEPARATOR
                 + task.getDescription();
         if (task instanceof Deadline) {
-            return common + SEPARATOR + ((Deadline) task).getBy();
+            return common + SEPARATOR + ((Deadline) task).getBy().toStorageString();
         } else if (task instanceof Event) {
             Event event = (Event) task;
-            return common + SEPARATOR + event.getFrom() + SEPARATOR + event.getTo();
+            return common + SEPARATOR + event.getFrom().toStorageString()
+                    + SEPARATOR + event.getTo().toStorageString();
         }
         return common;
     }
@@ -114,23 +115,29 @@ public class Storage {
         String description = parts[2];
 
         Task task;
-        switch (typeIcon) {
-        case "T":
-            task = new Todo(description);
-            break;
-        case "D":
-            if (parts.length < 4) {
+        try {
+            switch (typeIcon) {
+            case "T":
+                task = new Todo(description);
+                break;
+            case "D":
+                if (parts.length < 4) {
+                    return null;
+                }
+                task = new Deadline(description, DateTime.parse(parts[3]));
+                break;
+            case "E":
+                if (parts.length < 5) {
+                    return null;
+                }
+                task = new Event(description, DateTime.parse(parts[3]), DateTime.parse(parts[4]));
+                break;
+            default:
                 return null;
             }
-            task = new Deadline(description, parts[3]);
-            break;
-        case "E":
-            if (parts.length < 5) {
-                return null;
-            }
-            task = new Event(description, parts[3], parts[4]);
-            break;
-        default:
+        } catch (SukiException e) {
+            // An unreadable date means this line is corrupt; skip it rather
+            // than abandoning the rest of the file.
             return null;
         }
 

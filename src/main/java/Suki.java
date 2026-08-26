@@ -102,9 +102,9 @@ public class Suki {
             String[] parts = arguments.split(" /by ", 2);
             if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
                 throw new SukiException("A deadline needs a description and a '/by' date/time, "
-                        + "e.g. deadline return book /by Sunday");
+                        + "e.g. deadline return book /by 2019-10-15");
             }
-            addTask(tasks, new Deadline(parts[0].trim(), parts[1].trim()));
+            addTask(tasks, new Deadline(parts[0].trim(), DateTime.parse(parts[1])));
             break;
         }
         case EVENT: {
@@ -114,14 +114,15 @@ public class Suki {
             String[] fromSplit = arguments.split(" /from ", 2);
             if (fromSplit.length < 2 || fromSplit[0].trim().isEmpty()) {
                 throw new SukiException("An event needs a description, a '/from' and a '/to' date/time, "
-                        + "e.g. event project meeting /from Mon 2pm /to 4pm");
+                        + "e.g. event project meeting /from 2019-10-15 1400 /to 2019-10-15 1600");
             }
             String[] toSplit = fromSplit[1].split(" /to ", 2);
             if (toSplit.length < 2 || toSplit[0].trim().isEmpty() || toSplit[1].trim().isEmpty()) {
                 throw new SukiException("An event needs a description, a '/from' and a '/to' date/time, "
-                        + "e.g. event project meeting /from Mon 2pm /to 4pm");
+                        + "e.g. event project meeting /from 2019-10-15 1400 /to 2019-10-15 1600");
             }
-            addTask(tasks, new Event(fromSplit[0].trim(), toSplit[0].trim(), toSplit[1].trim()));
+            addTask(tasks, new Event(fromSplit[0].trim(),
+                    DateTime.parse(toSplit[0]), DateTime.parse(toSplit[1])));
             break;
         }
         default:

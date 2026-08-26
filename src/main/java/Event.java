@@ -2,20 +2,20 @@
  * Represents a task that starts and ends at specific dates/times.
  */
 public class Event extends Task {
-    protected String from;
-    protected String to;
+    protected DateTime from;
+    protected DateTime to;
 
-    public Event(String description, String from, String to) {
+    public Event(String description, DateTime from, DateTime to) {
         super(description);
         this.from = from;
         this.to = to;
     }
 
-    public String getFrom() {
+    public DateTime getFrom() {
         return from;
     }
 
-    public String getTo() {
+    public DateTime getTo() {
         return to;
     }
 
