@@ -11,6 +11,7 @@ public class Suki {
     private static final String LINE =
             "____________________________________________________________";
     private static final String BYE_COMMAND = "bye";
+    private static final String SAVE_FILE_PATH = "data/suki.txt";
 
     public static void main(String[] args) {
         System.out.println(LINE);
@@ -19,7 +20,17 @@ public class Suki {
         System.out.println("What can I do for you?");
         System.out.println(LINE);
 
-        ArrayList<Task> tasks = new ArrayList<>();
+        Storage storage = new Storage(SAVE_FILE_PATH);
+        ArrayList<Task> tasks;
+        try {
+            tasks = storage.load();
+        } catch (SukiException e) {
+            // A broken save file should not stop the user from working, so we
+            // warn and start from an empty list instead of exiting.
+            System.out.println("OOPS!!! " + e.getMessage());
+            System.out.println(LINE);
+            tasks = new ArrayList<>();
+        }
 
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
@@ -31,6 +42,7 @@ public class Suki {
             System.out.println(LINE);
             try {
                 processCommand(input, tasks);
+                storage.save(tasks);
             } catch (SukiException e) {
                 System.out.println("OOPS!!! " + e.getMessage());
             }
