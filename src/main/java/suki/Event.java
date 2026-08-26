@@ -1,3 +1,5 @@
+package suki;
+
 /**
  * Represents a task that starts and ends at specific dates/times.
  */

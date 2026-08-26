@@ -1,3 +1,5 @@
+package suki;
+
 /**
  * A personal assistant chatbot that keeps track of tasks.
  *

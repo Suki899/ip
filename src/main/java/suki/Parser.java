@@ -1,3 +1,5 @@
+package suki;
+
 /**
  * Turns raw lines typed by the user into something Suki can act on.
  *

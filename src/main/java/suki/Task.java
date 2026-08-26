@@ -1,3 +1,5 @@
+package suki;
+
 /**
  * Represents a task that can be tracked and marked as done.
  */
