@@ -94,6 +94,20 @@ public class Parser {
         return new Event(fromSplit[0].trim(), DateTime.parse(toSplit[0]), DateTime.parse(toSplit[1]));
     }
 
+    /**
+     * Reads the keyword of a "find" command.
+     *
+     * @param arguments the text following the command word
+     * @return the keyword to search for
+     * @throws SukiException if no keyword was given
+     */
+    public static String parseFindKeyword(String arguments) throws SukiException {
+        if (arguments.isEmpty()) {
+            throw new SukiException("Tell me what to look for, e.g. find book");
+        }
+        return arguments;
+    }
+
     private static String eventFormatMessage() {
         return "An event needs a description, a '/from' and a '/to' date/time, "
                 + "e.g. event project meeting /from 2019-10-15 1400 /to 2019-10-15 1600";

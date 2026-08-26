@@ -94,6 +94,9 @@ public class Suki {
         case EVENT:
             addTask(Parser.parseEvent(arguments));
             break;
+        case FIND:
+            ui.showFoundTasks(tasks.find(Parser.parseFindKeyword(arguments)));
+            break;
         default:
             throw new SukiException("I'm sorry, but I don't know what that means :-(");
         }
