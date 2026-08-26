@@ -45,17 +45,17 @@ public class DateTime implements Comparable<DateTime> {
         strict("d/M/uuuu"),
     };
 
-    private static DateTimeFormatter strict(String pattern) {
-        return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
-                .withResolverStyle(ResolverStyle.STRICT);
-    }
-
     private final LocalDateTime value;
     private final boolean hasTime;
 
     private DateTime(LocalDateTime value, boolean hasTime) {
         this.value = value;
         this.hasTime = hasTime;
+    }
+
+    private static DateTimeFormatter strict(String pattern) {
+        return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
+                .withResolverStyle(ResolverStyle.STRICT);
     }
 
     /**
