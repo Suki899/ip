@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Locale;
 
 /**
@@ -24,18 +25,30 @@ public class DateTime implements Comparable<DateTime> {
     private static final DateTimeFormatter DISPLAY_DATE_TIME =
             DateTimeFormatter.ofPattern("MMM d yyyy, h:mma", Locale.ENGLISH);
 
-    /** Input patterns accepted for a date with a time, tried in order. */
+    /**
+     * Input patterns accepted for a date with a time, tried in order.
+     *
+     * <p>These resolve strictly so that a date like 2019-02-31 is rejected
+     * rather than quietly adjusted to the end of the month, which is what
+     * Java's default SMART resolver would do. Strict resolution requires the
+     * "uuuu" year field; "yyyy" means era-based year and is not accepted.
+     */
     private static final DateTimeFormatter[] DATE_TIME_PATTERNS = {
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm", Locale.ENGLISH),
-        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH),
-        DateTimeFormatter.ofPattern("d/M/yyyy HHmm", Locale.ENGLISH),
+        strict("uuuu-MM-dd HHmm"),
+        strict("uuuu-MM-dd'T'HH:mm"),
+        strict("d/M/uuuu HHmm"),
     };
 
     /** Input patterns accepted for a bare date, tried in order. */
     private static final DateTimeFormatter[] DATE_PATTERNS = {
-        DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH),
-        DateTimeFormatter.ofPattern("d/M/yyyy", Locale.ENGLISH),
+        strict("uuuu-MM-dd"),
+        strict("d/M/uuuu"),
     };
+
+    private static DateTimeFormatter strict(String pattern) {
+        return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
+                .withResolverStyle(ResolverStyle.STRICT);
+    }
 
     private final LocalDateTime value;
     private final boolean hasTime;
@@ -85,7 +98,7 @@ public class DateTime implements Comparable<DateTime> {
      */
     public String toStorageString() {
         return hasTime
-                ? value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.ENGLISH))
+                ? value.format(strict("uuuu-MM-dd'T'HH:mm"))
                 : value.toLocalDate().toString();
     }
 

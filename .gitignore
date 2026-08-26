@@ -21,3 +21,6 @@ text-ui-test/EXPECTED-UNIX.TXT
 
 # Suki save file
 /data/
+
+# Downloaded test dependency
+/lib/
