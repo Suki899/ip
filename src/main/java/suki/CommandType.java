@@ -2,10 +2,35 @@ package suki;
 
 /**
  * Represents the type of command a user can enter.
+ *
+ * <p>{@link #UNKNOWN} stands for anything Suki does not recognise, so that
+ * unrecognised input is handled as an ordinary case rather than by throwing
+ * during parsing.
  */
 public enum CommandType {
-    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, UNKNOWN;
+    /** Show every task in the list. */
+    LIST,
+    /** Mark a task as done. */
+    MARK,
+    /** Mark a task as not done. */
+    UNMARK,
+    /** Remove a task from the list. */
+    DELETE,
+    /** Add a task with no date attached. */
+    TODO,
+    /** Add a task due by a given date. */
+    DEADLINE,
+    /** Add a task spanning a start and end date. */
+    EVENT,
+    /** Anything Suki does not recognise. */
+    UNKNOWN;
 
+    /**
+     * Returns the command matching the given word.
+     *
+     * @param commandWord the first word of a line typed by the user
+     * @return the matching command type, or {@link #UNKNOWN} if there is none
+     */
     public static CommandType fromWord(String commandWord) {
         switch (commandWord) {
         case "list":

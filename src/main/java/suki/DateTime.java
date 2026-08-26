@@ -20,8 +20,10 @@ import java.util.Locale;
  * "12:00AM" for dates the user gave without one.
  */
 public class DateTime implements Comparable<DateTime> {
+    /** How a date with no time of day is shown, e.g. "Oct 15 2019". */
     private static final DateTimeFormatter DISPLAY_DATE =
             DateTimeFormatter.ofPattern("MMM d yyyy", Locale.ENGLISH);
+    /** How a date with a time is shown, e.g. "Oct 15 2019, 6:00PM". */
     private static final DateTimeFormatter DISPLAY_DATE_TIME =
             DateTimeFormatter.ofPattern("MMM d yyyy, h:mma", Locale.ENGLISH);
 
@@ -45,14 +47,29 @@ public class DateTime implements Comparable<DateTime> {
         strict("d/M/uuuu"),
     };
 
+    /**
+     * Builds a formatter that refuses out-of-range dates.
+     *
+     * @param pattern the date pattern, which must use "uuuu" for the year
+     * @return a formatter using STRICT resolution
+     */
     private static DateTimeFormatter strict(String pattern) {
         return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
                 .withResolverStyle(ResolverStyle.STRICT);
     }
 
+    /** The date, with time set to midnight when the user gave none. */
     private final LocalDateTime value;
+
+    /** Whether the user actually supplied a time of day. */
     private final boolean hasTime;
 
+    /**
+     * Creates a DateTime. Private because instances come from {@link #parse}.
+     *
+     * @param value the date and time
+     * @param hasTime whether the time part came from the user
+     */
     private DateTime(LocalDateTime value, boolean hasTime) {
         this.value = value;
         this.hasTime = hasTime;
@@ -95,6 +112,8 @@ public class DateTime implements Comparable<DateTime> {
     /**
      * Returns this date in a form that {@link #parse} can read back, so that
      * saving and reloading a task does not lose the time of day.
+     *
+     * @return the date in ISO form, with a time only if one was given
      */
     public String toStorageString() {
         return hasTime
@@ -102,11 +121,23 @@ public class DateTime implements Comparable<DateTime> {
                 : value.toLocalDate().toString();
     }
 
+    /**
+     * Orders dates chronologically, so tasks can be sorted or filtered by date.
+     *
+     * @param other the date to compare against
+     * @return a negative number, zero or a positive number as this date is
+     *         earlier than, the same as, or later than the other
+     */
     @Override
     public int compareTo(DateTime other) {
         return value.compareTo(other.value);
     }
 
+    /**
+     * Returns the date as shown to the user.
+     *
+     * @return the formatted date, including the time only if one was given
+     */
     @Override
     public String toString() {
         return hasTime ? value.format(DISPLAY_DATE_TIME) : value.format(DISPLAY_DATE);

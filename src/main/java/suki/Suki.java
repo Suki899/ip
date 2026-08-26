@@ -9,11 +9,18 @@ package suki;
  * {@link Storage} keeps them on disk.
  */
 public class Suki {
+    /** Where tasks are saved, relative to the working directory. */
     private static final String SAVE_FILE_PATH = "data/suki.txt";
+    /** The word that ends the session. */
     private static final String BYE_COMMAND = "bye";
 
+    /** Handles all reading from and printing to the console. */
     private final Ui ui;
+
+    /** Keeps the task list on disk between runs. */
     private final Storage storage;
+
+    /** The tasks currently being tracked. */
     private TaskList tasks;
 
     /**
@@ -60,7 +67,12 @@ public class Suki {
         ui.showGoodbye();
     }
 
-    /** Carries out a single parsed command. */
+    /**
+     * Carries out a single parsed command.
+     *
+     * @param parsed the command to run, as returned by {@link Parser#parse}
+     * @throws SukiException if the command is unknown or its arguments are invalid
+     */
     private void execute(Parser.ParsedInput parsed) throws SukiException {
         String arguments = parsed.arguments();
 
@@ -99,11 +111,21 @@ public class Suki {
         }
     }
 
+    /**
+     * Adds a task to the list and tells the user about it.
+     *
+     * @param task the task to add
+     */
     private void addTask(Task task) {
         tasks.add(task);
         ui.showTaskAdded(task, tasks.size());
     }
 
+    /**
+     * Starts Suki.
+     *
+     * @param args command line arguments, which are not used
+     */
     public static void main(String[] args) {
         new Suki(SAVE_FILE_PATH).run();
     }

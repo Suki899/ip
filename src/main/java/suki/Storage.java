@@ -19,12 +19,19 @@ import java.util.Scanner;
  * </pre>
  */
 public class Storage {
+    /** What separates the fields on each saved line. */
     private static final String SEPARATOR = " | ";
     /** Used when splitting, because "|" is a regex metacharacter. */
     private static final String SEPARATOR_REGEX = " \\| ";
 
+    /** Where the save file lives, relative to the working directory. */
     private final String filePath;
 
+    /**
+     * Creates a Storage that reads and writes the given file.
+     *
+     * @param filePath where tasks are saved, relative to the working directory
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
@@ -86,6 +93,9 @@ public class Storage {
 
     /**
      * Turns a task into the single line of text that represents it on disk.
+     *
+     * @param task the task to encode
+     * @return the line to write to the save file
      */
     private String encode(Task task) {
         String common = task.getTypeIcon() + SEPARATOR
@@ -104,6 +114,7 @@ public class Storage {
     /**
      * Turns one saved line back into a task.
      *
+     * @param line a single line read from the save file
      * @return the task, or null if the line is malformed and should be skipped
      */
     private Task parseTask(String line) {
