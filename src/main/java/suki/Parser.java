@@ -52,6 +52,8 @@ public class Parser {
     /**
      * Builds a {@link Todo} from the arguments of a "todo" command.
      *
+     * @param arguments the text following the command word
+     * @return the todo described by the arguments
      * @throws SukiException if no description was given
      */
     public static Todo parseTodo(String arguments) throws SukiException {
@@ -65,6 +67,8 @@ public class Parser {
      * Builds a {@link Deadline} from the arguments of a "deadline" command,
      * which must be of the form {@code <description> /by <date>}.
      *
+     * @param arguments the text following the command word
+     * @return the deadline described by the arguments
      * @throws SukiException if the description or the date is missing or unreadable
      */
     public static Deadline parseDeadline(String arguments) throws SukiException {
@@ -80,6 +84,8 @@ public class Parser {
      * Builds an {@link Event} from the arguments of an "event" command, which
      * must be of the form {@code <description> /from <date> /to <date>}.
      *
+     * @param arguments the text following the command word
+     * @return the event described by the arguments
      * @throws SukiException if any part is missing or unreadable
      */
     public static Event parseEvent(String arguments) throws SukiException {
@@ -94,6 +100,12 @@ public class Parser {
         return new Event(fromSplit[0].trim(), DateTime.parse(toSplit[0]), DateTime.parse(toSplit[1]));
     }
 
+    /**
+     * Returns the message describing the expected "event" syntax, shared by the
+     * two places that reject malformed input.
+     *
+     * @return the error message to show the user
+     */
     private static String eventFormatMessage() {
         return "An event needs a description, a '/from' and a '/to' date/time, "
                 + "e.g. event project meeting /from 2019-10-15 1400 /to 2019-10-15 1600";
