@@ -79,6 +79,28 @@ public class TaskList {
     }
 
     /**
+     * Returns the tasks whose description contains the given text.
+     *
+     * <p>The match is case-insensitive and looks anywhere in the description,
+     * so "book" finds "Return book" as well as "bookshop". Only the
+     * description is searched: dates are excluded because a user looking for
+     * "oct" almost certainly means the word, not October.
+     *
+     * @param keyword the text to look for
+     * @return a new list holding the matching tasks, in their original order
+     */
+    public TaskList find(String keyword) {
+        String lowerKeyword = keyword.toLowerCase();
+        ArrayList<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase().contains(lowerKeyword)) {
+                matches.add(task);
+            }
+        }
+        return new TaskList(matches);
+    }
+
+    /**
      * Returns the underlying list, for components such as {@link Storage} that
      * need to walk every task.
      *

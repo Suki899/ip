@@ -22,6 +22,8 @@ public enum CommandType {
     DEADLINE,
     /** Add a task spanning a start and end date. */
     EVENT,
+    /** Search for tasks whose description contains some text. */
+    FIND,
     /** Anything Suki does not recognise. */
     UNKNOWN;
 
@@ -47,6 +49,8 @@ public enum CommandType {
             return DEADLINE;
         case "event":
             return EVENT;
+        case "find":
+            return FIND;
         default:
             return UNKNOWN;
         }

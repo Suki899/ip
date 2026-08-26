@@ -116,6 +116,20 @@ public class Parser {
     }
 
     /**
+     * Reads the keyword of a "find" command.
+     *
+     * @param arguments the text following the command word
+     * @return the keyword to search for
+     * @throws SukiException if no keyword was given
+     */
+    public static String parseFindKeyword(String arguments) throws SukiException {
+        if (arguments.isEmpty()) {
+            throw new SukiException("Tell me what to look for, e.g. find book");
+        }
+        return arguments;
+    }
+
+    /**
      * Returns the message describing the expected "event" syntax, shared by the
      * two places that reject malformed input.
      *
