@@ -18,6 +18,14 @@ public class Task {
         isDone = false;
     }
 
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     public String getStatusIcon() {
         return isDone ? "X" : " ";
     }
