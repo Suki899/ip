@@ -53,24 +53,36 @@ public class Ui {
         scanner.close();
     }
 
-    /** Prints the horizontal rule used to separate Suki's replies. */
+    /**
+     * Prints each of the given lines on a row of its own.
+     *
+     * <p>This takes varargs because Suki's replies are fixed sequences of
+     * lines whose length differs from one message to the next: an error is
+     * one line, a confirmation is two or three, and the greeting is five.
+     * Varargs lets each caller pass exactly the lines it has, without
+     * every one of them having to build a list or repeat a print loop.
+     *
+     * @param lines the lines to print, in order
+     */
+    public void show(String... lines) {
+        for (String line : lines) {
+            System.out.println(line);
+        }
+    }
+
+    /** Prints the horizontal rule separating Suki's replies. */
     public void showLine() {
-        System.out.println(LINE);
+        show(LINE);
     }
 
     /** Prints the banner and greeting shown when Suki starts. */
     public void showWelcome() {
-        showLine();
-        System.out.println(BANNER);
-        System.out.println("Hello! I'm Suki.");
-        System.out.println("What can I do for you?");
-        showLine();
+        show(LINE, BANNER, "Hello! I'm Suki.", "What can I do for you?", LINE);
     }
 
     /** Prints the parting message shown when the user leaves. */
     public void showGoodbye() {
-        System.out.println("Bye. Hope to see you again soon!");
-        showLine();
+        show("Bye. Hope to see you again soon!", LINE);
     }
 
     /**
@@ -79,7 +91,7 @@ public class Ui {
      * @param message the explanation to show the user
      */
     public void showError(String message) {
-        System.out.println("OOPS!!! " + message);
+        show("OOPS!!! " + message);
     }
 
     /**
@@ -89,15 +101,15 @@ public class Ui {
      */
     public void showTaskList(TaskList tasks) {
         if (tasks.isEmpty()) {
-            System.out.println("Your list is empty.");
+            show("Your list is empty.");
             return;
         }
-        System.out.println("Here are the tasks in your list:");
+        show("Here are the tasks in your list:");
         // Iterating the backing list avoids TaskList#get, whose bounds check
         // throws a checked exception that cannot happen for these indices.
         ArrayList<Task> list = tasks.asArrayList();
         for (int i = 0; i < list.size(); i++) {
-            System.out.println((i + 1) + "." + list.get(i));
+            show((i + 1) + "." + list.get(i));
         }
     }
 
@@ -108,13 +120,13 @@ public class Ui {
      */
     public void showFoundTasks(TaskList matches) {
         if (matches.isEmpty()) {
-            System.out.println("No matching tasks found.");
+            show("No matching tasks found.");
             return;
         }
-        System.out.println("Here are the matching tasks in your list:");
+        show("Here are the matching tasks in your list:");
         ArrayList<Task> list = matches.asArrayList();
         for (int i = 0; i < list.size(); i++) {
-            System.out.println((i + 1) + "." + list.get(i));
+            show((i + 1) + "." + list.get(i));
         }
     }
 
@@ -125,9 +137,7 @@ public class Ui {
      * @param taskCount how many tasks there are now
      */
     public void showTaskAdded(Task task, int taskCount) {
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task);
-        showTaskCount(taskCount);
+        show("Got it. I've added this task:", "  " + task, taskCountMessage(taskCount));
     }
 
     /**
@@ -137,9 +147,7 @@ public class Ui {
      * @param taskCount how many tasks there are now
      */
     public void showTaskRemoved(Task task, int taskCount) {
-        System.out.println("Noted. I've removed this task:");
-        System.out.println("  " + task);
-        showTaskCount(taskCount);
+        show("Noted. I've removed this task:", "  " + task, taskCountMessage(taskCount));
     }
 
     /**
@@ -148,8 +156,7 @@ public class Ui {
      * @param task the task that was marked
      */
     public void showTaskMarked(Task task) {
-        System.out.println("Nice! I've marked this task as done:");
-        System.out.println("  " + task);
+        show("Nice! I've marked this task as done:", "  " + task);
     }
 
     /**
@@ -158,16 +165,21 @@ public class Ui {
      * @param task the task that was unmarked
      */
     public void showTaskUnmarked(Task task) {
-        System.out.println("OK, I've marked this task as not done yet:");
-        System.out.println("  " + task);
+        show("OK, I've marked this task as not done yet:", "  " + task);
     }
 
     /**
-     * Prints how many tasks remain, shared by the add and remove messages.
+     * Returns the line reporting how many tasks remain, shared by the add
+     * and remove confirmations.
+     *
+     * <p>This returns the line rather than printing it so that callers can
+     * hand it to {@link #show(String...)} alongside their other lines,
+     * keeping each message a single call.
      *
      * @param taskCount how many tasks there are now
+     * @return the line to show the user
      */
-    private void showTaskCount(int taskCount) {
-        System.out.println("Now you have " + taskCount + " tasks in the list.");
+    private String taskCountMessage(int taskCount) {
+        return "Now you have " + taskCount + " tasks in the list.";
     }
 }
