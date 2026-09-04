@@ -26,44 +26,31 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
 
 ## Building from the command line
 
-The project has no build tool yet, so the steps below use `javac` and `jar`
-directly. They are run from the project root.
-
-Compile the application:
-
-```
-javac -d build/main src/main/java/suki/*.java
-```
+The project is built with Gradle. The wrapper (`gradlew`) is committed, so
+there is nothing to install first: it downloads the right Gradle version by
+itself on the first run. All commands below are run from the project root,
+and use `./gradlew` on macOS and Linux or `gradlew.bat` on Windows.
 
 Run it:
 
 ```
-java -cp build/main suki.Suki
+./gradlew run
 ```
 
 ### Running the tests
 
-The tests need the JUnit 5 console launcher, which is not committed to the
-repository. Download it once into `lib/`:
-
 ```
-mkdir -p lib
-curl -o lib/junit-console.jar \
-  https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/6.1.3/junit-platform-console-standalone-6.1.3.jar
+./gradlew test
 ```
 
-Then compile and run the suite:
-
-```
-javac -cp build/main:lib/junit-console.jar -d build/test src/test/java/suki/*.java
-java -jar lib/junit-console.jar execute --class-path build/main:build/test --scan-class-path
-```
+The JUnit dependency is declared in `build.gradle`, so it no longer needs
+to be downloaded by hand.
 
 ### Building the JAR
 
 ```
-jar --create --file build/suki.jar --main-class suki.Suki -C build/main .
-java -jar build/suki.jar
+./gradlew shadowJar
+java -jar build/libs/suki.jar
 ```
 
 The JAR is self-contained and can be run from any directory. Suki saves tasks
