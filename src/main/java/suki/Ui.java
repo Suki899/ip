@@ -25,6 +25,15 @@ public class Ui {
     /** Reads the user's typed input. */
     private final Scanner scanner;
 
+    /**
+     * Everything shown since {@link #takeOutput()} was last called.
+     *
+     * <p>The console prints as it goes, but the GUI needs a whole reply as one
+     * string to put in a dialog box. Recording the lines here lets both share
+     * the same message-building code instead of each formatting its own.
+     */
+    private final StringBuilder captured = new StringBuilder();
+
     /** Creates a Ui that reads from standard input. */
     public Ui() {
         this.scanner = new Scanner(System.in);
@@ -67,7 +76,23 @@ public class Ui {
     public void show(String... lines) {
         for (String line : lines) {
             System.out.println(line);
+            captured.append(line).append(System.lineSeparator());
         }
+    }
+
+    /**
+     * Returns everything shown since this method was last called, and forgets
+     * it so that the next reply starts empty.
+     *
+     * <p>Only the GUI uses this; the console has already printed the lines by
+     * the time this returns them.
+     *
+     * @return the lines shown since the last call, as one string
+     */
+    public String takeOutput() {
+        String output = captured.toString().strip();
+        captured.setLength(0);
+        return output;
     }
 
     /** Prints the horizontal rule separating Suki's replies. */
@@ -77,12 +102,31 @@ public class Ui {
 
     /** Prints the banner and greeting shown when Suki starts. */
     public void showWelcome() {
-        show(LINE, BANNER, "Hello! I'm Suki.", "What can I do for you?", LINE);
+        show(LINE, BANNER);
+        showGreeting();
+        show(LINE);
+    }
+
+    /**
+     * Prints the greeting on its own, without the banner and horizontal rules
+     * that only make sense in a console.
+     */
+    public void showGreeting() {
+        show("Hello! I'm Suki.", "What can I do for you?");
     }
 
     /** Prints the parting message shown when the user leaves. */
     public void showGoodbye() {
-        show("Bye. Hope to see you again soon!", LINE);
+        showFarewell();
+        show(LINE);
+    }
+
+    /**
+     * Prints the parting message on its own, without the horizontal rule that
+     * only makes sense in a console.
+     */
+    public void showFarewell() {
+        show("Bye. Hope to see you again soon!");
     }
 
     /**
