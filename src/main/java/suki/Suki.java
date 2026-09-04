@@ -43,6 +43,58 @@ public class Suki {
         }
     }
 
+    /**
+     * Creates a Suki that saves to the default file.
+     *
+     * <p>Convenience constructor for the GUI, which has no reason to choose a
+     * different path.
+     */
+    public Suki() {
+        this(SAVE_FILE_PATH);
+    }
+
+    /**
+     * Returns the greeting the GUI shows when it opens.
+     *
+     * @return the greeting text
+     */
+    public String getGreeting() {
+        ui.takeOutput();
+        ui.showGreeting();
+        return ui.takeOutput();
+    }
+
+    /**
+     * Returns Suki's reply to a single line of input, for the GUI.
+     *
+     * <p>This is the GUI's counterpart to {@link #run()}: instead of looping
+     * over the console it handles one line and hands back the text to display.
+     * The command itself is carried out by the same {@link #execute} method the
+     * console uses, so the two front ends cannot drift apart in behaviour; only
+     * the delivery differs. Errors come back as their message text rather than
+     * as thrown exceptions, since there is nowhere to propagate them to.
+     *
+     * @param input one line of user input, as {@code run} would have read it
+     * @return the text to show the user
+     */
+    public String getResponse(String input) {
+        // Drop anything left over from an earlier reply so this one stands alone.
+        ui.takeOutput();
+
+        if (input.trim().equals(BYE_COMMAND)) {
+            ui.showFarewell();
+            return ui.takeOutput();
+        }
+
+        try {
+            execute(Parser.parse(input));
+            storage.save(tasks.asArrayList());
+        } catch (SukiException e) {
+            ui.showError(e.getMessage());
+        }
+        return ui.takeOutput();
+    }
+
     /** Reads and executes commands until the user says goodbye or input ends. */
     public void run() {
         ui.showWelcome();

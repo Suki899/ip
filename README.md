@@ -37,6 +37,14 @@ Run it:
 ./gradlew run
 ```
 
+This opens the GUI. The original text interface is still there and is handy
+for testing, since the core logic can be exercised without driving a window.
+After a `./gradlew build`, start it with:
+
+```
+java -cp build/classes/java/main suki.Suki
+```
+
 ### Running the tests
 
 ```
