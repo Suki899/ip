@@ -86,12 +86,7 @@ public class Suki {
             return ui.takeOutput();
         }
 
-        try {
-            execute(Parser.parse(input));
-            storage.save(tasks.asArrayList());
-        } catch (SukiException e) {
-            ui.showError(e.getMessage());
-        }
+        executeAndSave(input);
         return ui.takeOutput();
     }
 
@@ -106,17 +101,31 @@ public class Suki {
             }
 
             ui.showLine();
-            try {
-                execute(Parser.parse(input));
-                storage.save(tasks.asArrayList());
-            } catch (SukiException e) {
-                ui.showError(e.getMessage());
-            }
+            executeAndSave(input);
             ui.showLine();
         }
 
         ui.close();
         ui.showGoodbye();
+    }
+
+    /**
+     * Runs one line of input and saves the result, reporting any problem to
+     * the user.
+     *
+     * <p>Both front ends need exactly this sequence, so it lives here rather
+     * than being written out twice: a change to how errors are reported, or to
+     * when the file is saved, then cannot apply to only one of them.
+     *
+     * @param input one line of user input
+     */
+    private void executeAndSave(String input) {
+        try {
+            execute(Parser.parse(input));
+            storage.save(tasks);
+        } catch (SukiException e) {
+            ui.showError(e.getMessage());
+        }
     }
 
     /**
