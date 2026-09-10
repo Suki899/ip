@@ -172,6 +172,10 @@ public class Suki {
         case FIND:
             ui.showFoundTasks(tasks.find(Parser.parseFindKeyword(arguments)));
             break;
+        case SORT:
+            tasks.sortByScheduledDate();
+            ui.showTasksSorted(tasks);
+            break;
         default:
             throw new SukiException("I'm sorry, but I don't know what that means :-(");
         }

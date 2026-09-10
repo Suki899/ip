@@ -1,5 +1,7 @@
 package suki;
 
+import java.util.Optional;
+
 /**
  * Represents a task that needs to be done before a specific date/time.
  */
@@ -25,6 +27,16 @@ public class Deadline extends Task {
      */
     public DateTime getBy() {
         return by;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the due date/time
+     */
+    @Override
+    public Optional<DateTime> getScheduledDateTime() {
+        return Optional.of(by);
     }
 
     /**

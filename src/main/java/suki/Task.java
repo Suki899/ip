@@ -1,5 +1,7 @@
 package suki;
 
+import java.util.Optional;
+
 /**
  * Represents a task that can be tracked and marked as done.
  *
@@ -71,6 +73,21 @@ public class Task {
      */
     public String getTypeIcon() {
         return " ";
+    }
+
+    /**
+     * Returns the date this task is scheduled against, if it has one.
+     *
+     * <p>A plain task has no date, so the base class returns an empty
+     * Optional and the dated subclasses override this. Asking the task itself
+     * lets sorting treat every kind of task the same way, instead of testing
+     * for each subclass and reaching for a different getter each time.
+     *
+     * @return the date used when ordering tasks by time, or empty if the task
+     *         has no date
+     */
+    public Optional<DateTime> getScheduledDateTime() {
+        return Optional.empty();
     }
 
     /**

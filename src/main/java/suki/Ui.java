@@ -153,6 +153,23 @@ public class Ui {
     }
 
     /**
+     * Confirms that the list was sorted, and shows the new order.
+     *
+     * <p>The whole list is shown because the point of sorting is the order,
+     * which a one-line confirmation would not convey.
+     *
+     * @param tasks the tasks, already sorted
+     */
+    public void showTasksSorted(TaskList tasks) {
+        if (tasks.isEmpty()) {
+            show("There is nothing to sort. Your list is empty.");
+            return;
+        }
+        show("Sorted. Here are your tasks, earliest first:");
+        showNumbered(tasks);
+    }
+
+    /**
      * Prints the tasks matching a search, or a note if there were none.
      *
      * @param matches the tasks that matched
