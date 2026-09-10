@@ -235,6 +235,7 @@ public class Ui {
      * @return the line to show the user
      */
     private String taskCountMessage(int taskCount) {
+        assert taskCount >= 0 : "a task count is a list size and cannot be negative";
         return "Now you have " + taskCount + " tasks in the list.";
     }
 }

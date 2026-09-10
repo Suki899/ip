@@ -26,6 +26,7 @@ public class TaskList {
      * @param tasks the tasks to start with
      */
     public TaskList(ArrayList<Task> tasks) {
+        assert tasks != null : "a TaskList must wrap a real list, not null";
         this.tasks = tasks;
     }
 
@@ -53,7 +54,10 @@ public class TaskList {
      * @param task the task to add
      */
     public void add(Task task) {
+        assert task != null : "callers must not add a null task";
+        int sizeBefore = tasks.size();
         tasks.add(task);
+        assert tasks.size() == sizeBefore + 1 : "adding must grow the list by exactly one";
     }
 
     /**
@@ -65,7 +69,9 @@ public class TaskList {
      */
     public Task get(int index) throws SukiException {
         checkIndex(index);
-        return tasks.get(index);
+        Task task = tasks.get(index);
+        assert task != null : "the list must never hold a null task";
+        return task;
     }
 
     /**
@@ -77,7 +83,10 @@ public class TaskList {
      */
     public Task remove(int index) throws SukiException {
         checkIndex(index);
-        return tasks.remove(index);
+        int sizeBefore = tasks.size();
+        Task removed = tasks.remove(index);
+        assert tasks.size() == sizeBefore - 1 : "removing must shrink the list by exactly one";
+        return removed;
     }
 
     /**
@@ -92,6 +101,7 @@ public class TaskList {
      * @return a new list holding the matching tasks, in their original order
      */
     public TaskList find(String keyword) {
+        assert keyword != null : "the keyword is validated by the parser and cannot be null here";
         String lowerKeyword = keyword.toLowerCase();
         ArrayList<Task> matches = new ArrayList<>();
         for (Task task : tasks) {
@@ -99,6 +109,7 @@ public class TaskList {
                 matches.add(task);
             }
         }
+        assert matches.size() <= tasks.size() : "a search cannot return more tasks than there are";
         return new TaskList(matches);
     }
 
@@ -124,6 +135,8 @@ public class TaskList {
      * @throws SukiException if there is no task at that position
      */
     private void checkIndex(int index) throws SukiException {
+        // A bad index comes from the user, so it is an exception rather than an
+        // assertion: assertions are for bugs, not for foreseeable user mistakes.
         if (index < 0 || index >= tasks.size()) {
             throw new SukiException("That task number doesn't exist. You have "
                     + tasks.size() + " task(s).");
