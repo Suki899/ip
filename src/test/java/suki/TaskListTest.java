@@ -58,6 +58,16 @@ public class TaskListTest {
         assertThrows(SukiException.class, () -> tasks.remove(0));
     }
 
+    /**
+     * Guards the whole A-Assertions increment: if the build stops passing -ea,
+     * every other assertion in the codebase quietly stops checking anything,
+     * and this is the test that notices.
+     */
+    @Test
+    public void add_null_failsWhileAssertionsAreEnabled() {
+        assertThrows(AssertionError.class, () -> new TaskList().add(null));
+    }
+
     @Test
     public void get_outOfRangeMessage_reportsActualSize() {
         TaskList tasks = new TaskList();

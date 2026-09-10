@@ -113,6 +113,7 @@ public class Storage {
      * @return the line to write to the save file
      */
     private String encode(Task task) {
+        assert task != null : "the task list never holds nulls, so nothing null reaches here";
         String common = task.getTypeIcon() + SEPARATOR
                 + (task.isDone() ? DONE_FLAG : NOT_DONE_FLAG) + SEPARATOR
                 + task.getDescription();
@@ -134,9 +135,12 @@ public class Storage {
      */
     private Task parseTask(String line) {
         String[] parts = line.split(SEPARATOR_REGEX);
+        // A short line means a corrupt save file, which is not a bug in Suki,
+        // so it is skipped rather than asserted away.
         if (parts.length < 3) {
             return null;
         }
+        assert parts.length >= 3 : "the guard above returns early for shorter lines";
 
         String typeIcon = parts[0];
         boolean isDone = parts[1].equals(DONE_FLAG);
