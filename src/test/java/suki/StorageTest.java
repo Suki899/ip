@@ -1,6 +1,7 @@
 package suki;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class StorageTest {
         original.add(new Event("meeting",
                 DateTime.parse("2019-10-15 1400"), DateTime.parse("2019-10-15 1600")));
 
-        storage.save(original);
+        storage.save(new TaskList(original));
         ArrayList<Task> reloaded = storage.load();
 
         assertEquals(original.size(), reloaded.size());
@@ -59,11 +60,11 @@ public class StorageTest {
         tasks.add(done);
         tasks.add(new Todo("pending task"));
 
-        storage.save(tasks);
+        storage.save(new TaskList(tasks));
         ArrayList<Task> reloaded = storage.load();
 
         assertTrue(reloaded.get(0).isDone());
-        assertTrue(!reloaded.get(1).isDone());
+        assertFalse(reloaded.get(1).isDone());
     }
 
     @Test
@@ -71,7 +72,7 @@ public class StorageTest {
         Path nested = tempDir.resolve("some/new/folder/suki.txt");
         Storage storage = new Storage(nested.toString());
 
-        storage.save(new ArrayList<>());
+        storage.save(new TaskList());
 
         assertTrue(Files.exists(nested), "save should create the folders it needs");
     }
