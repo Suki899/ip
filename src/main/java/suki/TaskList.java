@@ -1,6 +1,7 @@
 package suki;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * The list of tasks Suki is tracking.
@@ -86,18 +87,20 @@ public class TaskList {
      * description is searched: dates are excluded because a user looking for
      * "oct" almost certainly means the word, not October.
      *
+     * <p>Written as a stream because the search is exactly a filter over the
+     * tasks: the stream says "keep the tasks whose description contains the
+     * keyword" directly, where the equivalent loop says it indirectly, through
+     * an accumulator list that the reader has to follow to see what is being
+     * built.
+     *
      * @param keyword the text to look for
      * @return a new list holding the matching tasks, in their original order
      */
     public TaskList find(String keyword) {
         String lowerKeyword = keyword.toLowerCase();
-        ArrayList<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task.getDescription().toLowerCase().contains(lowerKeyword)) {
-                matches.add(task);
-            }
-        }
-        return new TaskList(matches);
+        return new TaskList(tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase().contains(lowerKeyword))
+                .collect(Collectors.toCollection(ArrayList::new)));
     }
 
     /**

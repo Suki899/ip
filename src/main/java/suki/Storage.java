@@ -3,8 +3,11 @@ package suki;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Loads tasks from, and saves tasks to, a plain-text file on disk.
@@ -58,27 +61,29 @@ public class Storage {
      * list is returned rather than an error. Individual lines that cannot be
      * understood are skipped so that one bad line does not lose the whole file.
      *
+     * <p>Reading through a stream lets the two rules above be stated as the
+     * two steps they are, decoding each line and then dropping the ones that
+     * could not be decoded, instead of interleaving both with the mechanics of
+     * advancing a scanner.
+     *
      * @return the tasks that were saved, in the order they were saved
      * @throws SukiException if the file exists but cannot be read
      */
     public ArrayList<Task> load() throws SukiException {
-        ArrayList<Task> tasks = new ArrayList<>();
         File file = new File(filePath);
         if (!file.exists()) {
-            return tasks;
+            return new ArrayList<>();
         }
 
-        try (Scanner scanner = new Scanner(file)) {
-            while (scanner.hasNextLine()) {
-                Task task = parseTask(scanner.nextLine());
-                if (task != null) {
-                    tasks.add(task);
-                }
-            }
+        // The stream is closed by try-with-resources because Files#lines holds
+        // the file open until the stream is consumed.
+        try (Stream<String> lines = Files.lines(file.toPath())) {
+            return lines.map(this::parseTask)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toCollection(ArrayList::new));
         } catch (IOException e) {
             throw new SukiException("I couldn't read your saved tasks: " + e.getMessage());
         }
-        return tasks;
     }
 
     /**
