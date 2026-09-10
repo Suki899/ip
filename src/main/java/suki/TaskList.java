@@ -2,7 +2,9 @@ package suki;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -115,6 +117,45 @@ public class TaskList {
                 .collect(Collectors.toCollection(ArrayList::new));
         assert matches.size() <= tasks.size() : "a search cannot return more tasks than there are";
         return new TaskList(matches);
+    }
+
+    /**
+     * Orders tasks by when they are scheduled, earliest first.
+     *
+     * <p>Tasks with no date, i.e. todos, sort after every dated task rather
+     * than before them: a sorted list is read to find out what is coming up
+     * next, and an undated task is never the answer to that.
+     *
+     * <p>The comparator is used with a stable sort, so tasks that compare
+     * equal, including all the undated ones, keep the order the user added
+     * them in. That makes repeated sorts predictable.
+     */
+    private static final Comparator<Task> BY_SCHEDULED_DATE = (first, second) -> {
+        Optional<DateTime> firstDate = first.getScheduledDateTime();
+        Optional<DateTime> secondDate = second.getScheduledDateTime();
+        if (firstDate.isEmpty() && secondDate.isEmpty()) {
+            return 0;
+        }
+        if (firstDate.isEmpty()) {
+            return 1;
+        }
+        if (secondDate.isEmpty()) {
+            return -1;
+        }
+        return firstDate.get().compareTo(secondDate.get());
+    };
+
+    /**
+     * Sorts the tasks in place, earliest scheduled task first.
+     *
+     * <p>Sorting in place rather than returning a sorted copy is deliberate:
+     * the user asks for the list to be sorted, and expects the new order to be
+     * the one they see from then on and the one that is saved.
+     */
+    public void sortByScheduledDate() {
+        int sizeBefore = tasks.size();
+        tasks.sort(BY_SCHEDULED_DATE);
+        assert tasks.size() == sizeBefore : "sorting must not add or drop tasks";
     }
 
     /**

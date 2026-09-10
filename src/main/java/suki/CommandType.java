@@ -24,6 +24,8 @@ public enum CommandType {
     EVENT,
     /** Search for tasks whose description contains some text. */
     FIND,
+    /** Reorder the list so the earliest scheduled task comes first. */
+    SORT,
     /** Anything Suki does not recognise. */
     UNKNOWN;
 
@@ -51,6 +53,8 @@ public enum CommandType {
             return EVENT;
         case "find":
             return FIND;
+        case "sort":
+            return SORT;
         default:
             return UNKNOWN;
         }

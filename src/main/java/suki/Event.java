@@ -1,5 +1,7 @@
 package suki;
 
+import java.util.Optional;
+
 /**
  * Represents a task that starts and ends at specific dates/times.
  */
@@ -39,6 +41,19 @@ public class Event extends Task {
      */
     public DateTime getTo() {
         return to;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>An event is ordered by when it starts, not when it ends, because
+     * that is when the user has to act on it.
+     *
+     * @return the start date/time
+     */
+    @Override
+    public Optional<DateTime> getScheduledDateTime() {
+        return Optional.of(from);
     }
 
     /**
