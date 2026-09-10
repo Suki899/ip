@@ -126,6 +126,8 @@ public class Suki {
      * @throws SukiException if the command is unknown or its arguments are invalid
      */
     private void execute(Parser.ParsedInput parsed) throws SukiException {
+        assert parsed != null : "the parser always returns a result, never null";
+        assert tasks != null : "the constructor leaves a task list behind even when loading fails";
         String arguments = parsed.arguments();
 
         switch (parsed.commandType()) {
@@ -172,7 +174,9 @@ public class Suki {
      * @param task the task to add
      */
     private void addTask(Task task) {
+        assert task != null : "the parser either builds a task or throws";
         tasks.add(task);
+        assert !tasks.isEmpty() : "the list holds at least the task just added";
         ui.showTaskAdded(task, tasks.size());
     }
 

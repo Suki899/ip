@@ -60,6 +60,7 @@ public class DateTime implements Comparable<DateTime> {
      * @param hasTime whether the time part came from the user
      */
     private DateTime(LocalDateTime value, boolean hasTime) {
+        assert value != null : "every parse path supplies a real date before constructing";
         this.value = value;
         this.hasTime = hasTime;
     }
