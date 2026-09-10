@@ -1,6 +1,8 @@
 package suki;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -116,13 +118,18 @@ public class TaskList {
     }
 
     /**
-     * Returns the underlying list, for components such as {@link Storage} that
-     * need to walk every task.
+     * Returns the tasks in order, for components such as {@link Storage} and
+     * {@link Ui} that need to walk every task.
      *
-     * @return the backing list, not a copy
+     * <p>The view is unmodifiable so that callers can read the list without
+     * being able to change it behind this class's back. Callers that want to
+     * add or remove go through {@link #add} and {@link #remove}, which is what
+     * keeps the bounds checking in one place.
+     *
+     * @return an unmodifiable view of the tasks, in the order they were added
      */
-    public ArrayList<Task> asArrayList() {
-        return tasks;
+    public List<Task> asList() {
+        return Collections.unmodifiableList(tasks);
     }
 
     /**

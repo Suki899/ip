@@ -39,6 +39,7 @@ public class Storage {
 
     /** Field value meaning the task is not done. */
     private static final String NOT_DONE_FLAG = "0";
+
     /** Used when splitting, because "|" is a regex metacharacter. */
     private static final String SEPARATOR_REGEX = " \\| ";
 
@@ -95,7 +96,7 @@ public class Storage {
      * @param tasks the tasks to save
      * @throws SukiException if the file cannot be written
      */
-    public void save(ArrayList<Task> tasks) throws SukiException {
+    public void save(TaskList tasks) throws SukiException {
         File file = new File(filePath);
         File parent = file.getParentFile();
         if (parent != null && !parent.exists() && !parent.mkdirs()) {
@@ -103,7 +104,7 @@ public class Storage {
         }
 
         try (FileWriter writer = new FileWriter(file)) {
-            for (Task task : tasks) {
+            for (Task task : tasks.asList()) {
                 writer.write(encode(task) + System.lineSeparator());
             }
         } catch (IOException e) {
@@ -122,10 +123,10 @@ public class Storage {
         String common = task.getTypeIcon() + SEPARATOR
                 + (task.isDone() ? DONE_FLAG : NOT_DONE_FLAG) + SEPARATOR
                 + task.getDescription();
-        if (task instanceof Deadline) {
-            return common + SEPARATOR + ((Deadline) task).getBy().toStorageString();
-        } else if (task instanceof Event) {
-            Event event = (Event) task;
+        if (task instanceof Deadline deadline) {
+            return common + SEPARATOR + deadline.getBy().toStorageString();
+        }
+        if (task instanceof Event event) {
             return common + SEPARATOR + event.getFrom().toStorageString()
                     + SEPARATOR + event.getTo().toStorageString();
         }
