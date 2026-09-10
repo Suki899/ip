@@ -39,6 +39,10 @@ dependencies {
 test {
     useJUnitPlatform()
 
+    // Assertions are disabled by default in the JVM, so the checks added for
+    // the A-Assertions increment would silently do nothing during tests.
+    jvmArgs '-ea'
+
     testLogging {
         events 'passed', 'skipped', 'failed'
 
@@ -51,6 +55,10 @@ test {
 }
 
 application {
+    // Run the app with assertions on, so a broken internal assumption fails
+    // loudly during development instead of corrupting the task list quietly.
+    applicationDefaultJvmArgs = ['-ea']
+
     // Launcher, not Main, because a JavaFX Application subclass cannot be the
     // entry point when JavaFX comes from the classpath rather than the module path.
     mainClass = 'suki.Launcher'

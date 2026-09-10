@@ -41,7 +41,9 @@ public class Parser {
      * @return the command type and its arguments
      */
     public static ParsedInput parse(String input) {
+        assert input != null : "the caller reads a line before parsing it, so it is never null";
         String[] split = input.trim().split(COMMAND_DELIMITER, 2);
+        assert split.length >= 1 : "String#split always yields at least one element";
         String commandWord = split[0];
         String arguments = split.length > 1 ? split[1].trim() : "";
         return new ParsedInput(CommandType.fromWord(commandWord), commandWord, arguments);
@@ -92,6 +94,7 @@ public class Parser {
             throw new SukiException("A deadline needs a description and a '/by' date/time, "
                     + "e.g. deadline return book /by 2019-10-15");
         }
+        assert parts.length == 2 : "the guard above rejects anything that did not split in two";
         return new Deadline(parts[0].trim(), DateTime.parse(parts[1]));
     }
 
