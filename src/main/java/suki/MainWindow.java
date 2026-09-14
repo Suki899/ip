@@ -1,12 +1,14 @@
 package suki;
 
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
  * Controller for the main window.
@@ -28,9 +30,6 @@ public class MainWindow extends AnchorPane {
     /** The chatbot that answers what the user types. */
     private Suki suki;
 
-    private final Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
-    private final Image sukiImage = new Image(this.getClass().getResourceAsStream("/images/DaSuki.png"));
-
     /** Keeps the newest message in view as the conversation grows. */
     @FXML
     public void initialize() {
@@ -47,7 +46,7 @@ public class MainWindow extends AnchorPane {
      */
     public void setSuki(Suki suki) {
         this.suki = suki;
-        dialogContainer.getChildren().add(DialogBox.getSukiDialog(suki.getGreeting(), sukiImage));
+        dialogContainer.getChildren().add(DialogBox.getSukiDialog(suki.getGreeting()));
     }
 
     /**
@@ -61,10 +60,21 @@ public class MainWindow extends AnchorPane {
             return;
         }
         String response = suki.getResponse(input);
+        DialogBox responseBox = response.startsWith("OOPS!!!")
+                ? DialogBox.getErrorDialog(response)
+                : DialogBox.getSukiDialog(response);
         dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input, userImage),
-                DialogBox.getSukiDialog(response, sukiImage)
+                DialogBox.getUserDialog(input),
+                responseBox
         );
         userInput.clear();
+
+        if (Suki.isExitCommand(input)) {
+            userInput.setDisable(true);
+            sendButton.setDisable(true);
+            PauseTransition farewellDelay = new PauseTransition(Duration.seconds(1));
+            farewellDelay.setOnFinished(event -> Platform.exit());
+            farewellDelay.play();
+        }
     }
 }

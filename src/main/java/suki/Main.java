@@ -27,6 +27,8 @@ public class Main extends Application {
             AnchorPane root = fxmlLoader.load();
             stage.setScene(new Scene(root));
             stage.setTitle("Suki");
+            stage.setMinWidth(360);
+            stage.setMinHeight(420);
             fxmlLoader.<MainWindow>getController().setSuki(suki);
             stage.show();
         } catch (IOException e) {
