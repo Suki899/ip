@@ -81,7 +81,7 @@ public class Suki {
         // Drop anything left over from an earlier reply so this one stands alone.
         ui.takeOutput();
 
-        if (input.trim().equals(BYE_COMMAND)) {
+        if (isExitCommand(input)) {
             ui.showFarewell();
             return ui.takeOutput();
         }
@@ -96,7 +96,7 @@ public class Suki {
 
         while (ui.hasNextCommand()) {
             String input = ui.readCommand();
-            if (input.trim().equals(BYE_COMMAND)) {
+            if (isExitCommand(input)) {
                 break;
             }
 
@@ -107,6 +107,16 @@ public class Suki {
 
         ui.close();
         ui.showGoodbye();
+    }
+
+    /**
+     * Returns whether the input asks Suki to end the session.
+     *
+     * @param input one line entered by the user
+     * @return true only for the {@code bye} command, ignoring surrounding spaces
+     */
+    public static boolean isExitCommand(String input) {
+        return input.trim().equals(BYE_COMMAND);
     }
 
     /**
@@ -141,6 +151,7 @@ public class Suki {
 
         switch (parsed.commandType()) {
         case LIST:
+            Parser.requireNoArguments(arguments, parsed.commandWord());
             ui.showTaskList(tasks);
             break;
         case MARK: {
@@ -173,6 +184,7 @@ public class Suki {
             ui.showFoundTasks(tasks.find(Parser.parseFindKeyword(arguments)));
             break;
         case SORT:
+            Parser.requireNoArguments(arguments, parsed.commandWord());
             tasks.sortByScheduledDate();
             ui.showTasksSorted(tasks);
             break;

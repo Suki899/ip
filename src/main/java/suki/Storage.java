@@ -149,6 +149,9 @@ public class Storage {
         assert parts.length >= 3 : "the guard above returns early for shorter lines";
 
         String typeIcon = parts[0];
+        if (!parts[1].equals(DONE_FLAG) && !parts[1].equals(NOT_DONE_FLAG)) {
+            return null;
+        }
         boolean isDone = parts[1].equals(DONE_FLAG);
         String description = parts[2];
 

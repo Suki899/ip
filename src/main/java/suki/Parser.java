@@ -9,16 +9,16 @@ package suki;
  */
 public class Parser {
     /** Separates a deadline's description from its due date. */
-    private static final String BY_DELIMITER = " /by ";
+    private static final String BY_DELIMITER = "\\s+/by\\s+";
 
     /** Separates an event's description from its start. */
-    private static final String FROM_DELIMITER = " /from ";
+    private static final String FROM_DELIMITER = "\\s+/from\\s+";
 
     /** Separates an event's start from its end. */
-    private static final String TO_DELIMITER = " /to ";
+    private static final String TO_DELIMITER = "\\s+/to\\s+";
 
     /** Splits a line into the command word and everything after it. */
-    private static final String COMMAND_DELIMITER = " ";
+    private static final String COMMAND_DELIMITER = "\\s+";
 
     /** Not meant to be instantiated: this class only holds static helpers. */
     private Parser() {
@@ -60,7 +60,11 @@ public class Parser {
      */
     public static int parseIndex(String arguments, String commandWord) throws SukiException {
         try {
-            return Integer.parseInt(arguments.trim()) - 1;
+            int taskNumber = Integer.parseInt(arguments.trim());
+            if (taskNumber < 1) {
+                throw new NumberFormatException();
+            }
+            return taskNumber - 1;
         } catch (NumberFormatException e) {
             throw new SukiException("Please provide a valid task number, e.g. " + commandWord + " 1");
         }
@@ -115,7 +119,12 @@ public class Parser {
         if (toSplit.length < 2 || toSplit[0].trim().isEmpty() || toSplit[1].trim().isEmpty()) {
             throw new SukiException(eventFormatMessage());
         }
-        return new Event(fromSplit[0].trim(), DateTime.parse(toSplit[0]), DateTime.parse(toSplit[1]));
+        DateTime from = DateTime.parse(toSplit[0]);
+        DateTime to = DateTime.parse(toSplit[1]);
+        if (from.compareTo(to) >= 0) {
+            throw new SukiException("An event must end after it starts.");
+        }
+        return new Event(fromSplit[0].trim(), from, to);
     }
 
     /**
@@ -130,6 +139,19 @@ public class Parser {
             throw new SukiException("Tell me what to look for, e.g. find book");
         }
         return arguments;
+    }
+
+    /**
+     * Rejects arguments supplied to a command that does not accept any.
+     *
+     * @param arguments text following the command word
+     * @param commandWord command being checked
+     * @throws SukiException if unexpected arguments were supplied
+     */
+    public static void requireNoArguments(String arguments, String commandWord) throws SukiException {
+        if (!arguments.isEmpty()) {
+            throw new SukiException("The '" + commandWord + "' command does not take any arguments.");
+        }
     }
 
     /**
