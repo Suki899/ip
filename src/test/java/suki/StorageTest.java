@@ -86,6 +86,7 @@ public class StorageTest {
                 "D | 0 | missing its date",
                 "X | 0 | unknown task type",
                 "D | 0 | bad date | not-a-date",
+                "T | maybe | invalid status",
                 "T | 1 | another good task"));
 
         ArrayList<Task> loaded = new Storage(file.toString()).load();

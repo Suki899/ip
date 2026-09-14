@@ -27,6 +27,13 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_multipleWhitespace_splitsCommandCleanly() {
+        Parser.ParsedInput parsed = Parser.parse("  deadline   return book /by 2019-10-15  ");
+        assertEquals(CommandType.DEADLINE, parsed.commandType());
+        assertEquals("return book /by 2019-10-15", parsed.arguments());
+    }
+
+    @Test
     public void parse_unknownCommand_mapsToUnknown() {
         assertEquals(CommandType.UNKNOWN, Parser.parse("blah blah").commandType());
     }
@@ -41,6 +48,8 @@ public class ParserTest {
     public void parseIndex_notANumber_throws() {
         assertThrows(SukiException.class, () -> Parser.parseIndex("one", "mark"));
         assertThrows(SukiException.class, () -> Parser.parseIndex("", "mark"));
+        assertThrows(SukiException.class, () -> Parser.parseIndex("0", "mark"));
+        assertThrows(SukiException.class, () -> Parser.parseIndex("-1", "mark"));
     }
 
     @Test
@@ -51,6 +60,12 @@ public class ParserTest {
     @Test
     public void parseDeadline_validInput_buildsDeadline() throws SukiException {
         Deadline deadline = Parser.parseDeadline("return book /by 2019-10-15");
+        assertEquals("[D][ ] return book (by: Oct 15 2019)", deadline.toString());
+    }
+
+    @Test
+    public void parseDeadline_extraSpacesAroundDelimiter_isAccepted() throws SukiException {
+        Deadline deadline = Parser.parseDeadline("return book   /by   2019-10-15");
         assertEquals("[D][ ] return book (by: Oct 15 2019)", deadline.toString());
     }
 
@@ -74,5 +89,18 @@ public class ParserTest {
     @Test
     public void parseEvent_missingToClause_throws() {
         assertThrows(SukiException.class, () -> Parser.parseEvent("meeting /from 2019-10-15"));
+    }
+
+    @Test
+    public void parseEvent_endBeforeOrAtStart_throws() {
+        assertThrows(SukiException.class,
+                () -> Parser.parseEvent("meeting /from 2019-10-15 1600 /to 2019-10-15 1400"));
+        assertThrows(SukiException.class,
+                () -> Parser.parseEvent("meeting /from 2019-10-15 1400 /to 2019-10-15 1400"));
+    }
+
+    @Test
+    public void requireNoArguments_unexpectedArguments_throws() {
+        assertThrows(SukiException.class, () -> Parser.requireNoArguments("now", "list"));
     }
 }
